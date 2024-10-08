@@ -1,0 +1,9 @@
+jupyterlab
+
+numpy
+
+matplotlib
+plotly
+nbformat
+
+ipycanvas
