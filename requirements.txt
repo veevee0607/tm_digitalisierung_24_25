@@ -7,3 +7,5 @@ plotly
 nbformat
 
 ipycanvas
+
+pre-commit
