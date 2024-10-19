@@ -5,3 +5,8 @@
 - activate venv: .\venv\Scripts\activate
 - install requirements: pip install -r requirements.txt
 - launch jupyter notebook web ui: python -m jupyter notebook
+
+
+
+# Notes
+- use multi layer canvas to add different stroke styles for different elements
