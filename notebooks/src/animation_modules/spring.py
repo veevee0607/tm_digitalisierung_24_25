@@ -32,5 +32,12 @@ class Spring(Shape):
                 self._width,
             )
             canvas.stroke_lines(list(zip(x_coords, y_coords)))
+            index = len(x_coords) - 1
+            canvas.stroke_line(
+                x_coords[index],
+                y_coords[index],
+                x_coords[index] + 5,
+                y_coords[index],
+            )
 
-            # time.sleep(0.02)
+        # time.sleep(0.02)
