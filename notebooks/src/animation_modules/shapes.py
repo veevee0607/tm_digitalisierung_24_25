@@ -37,34 +37,7 @@ class Rectangle(Shape):
     def animate(
         self, canvas: Canvas, time_vec: List[int], pos_vec: List[Tuple[int, int]]
     ) -> None:
-
-        self.height = 100
-        # loop through time vector to animate circle
-        # for _, pos in zip(time_vec, pos_vec):
-        canvas.fill_style = "grey"
-        with hold_canvas():
-            canvas.clear()
-            canvas.fill_rect(
-                x=pos_vec[0] + 5,
-                y=pos_vec[1] - self.height / 2,
-                width=self.width,
-                height=self.height,
-            )
-            canvas.stroke_rect(
-                x=pos_vec[0] + 5,
-                y=pos_vec[1] - self.height / 2,
-                width=self.width,
-                height=self.height,
-            )
-            # animate text
-            canvas.fill_style = "black"
-            canvas.fill_text(
-                "m",
-                x=pos_vec[0] - 5 + self.width / 2,
-                y=pos_vec[1] - self.height / 2 + self.height / 2,
-            )
-
-            # time.sleep(0.02)
+        return None
 
 
 class Triangle(Shape):
