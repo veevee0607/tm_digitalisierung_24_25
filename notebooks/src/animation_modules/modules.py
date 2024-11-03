@@ -1,41 +1,68 @@
-from typing import Tuple, List, Any
+from typing import Tuple, Any
 from ipycanvas import Canvas
 from abc import abstractmethod
+
+"""Shape superclass.
+"""
 
 
 class Shape:
     def __init__(
         self,
-        center: Tuple[int, int],
+        center: Tuple[int, int] | Any = None,
         width: int | Any = None,
         height: int | Any = None,
-        upper_left_corner: Tuple[int, int] | Any = None,
         radius: int | Any = None,
         A: Tuple[int, int] | Any = None,
         B: Tuple[int, int] | Any = None,
         C: Tuple[int, int] | Any = None,
+        start: Tuple[int, int] | Any = None,
+        end: Tuple[int, int] | Any = None,
+        nodes: int | Any = None,
     ) -> None:
-        self._center = center
+        shapes = [
+            (  # check for rectangle
+                width is not None and height is not None,
+                {"_width": width, "_height": height},
+            ),
+            (  # check for circle
+                radius is not None and center is not None,
+                {"_center": center, "_radius": radius},
+            ),
+            (  # check for triangle polygone
+                A is not None and B is not None and C is not None,
+                {"_A": A, "_B": B, "_C": C},
+            ),
+            (  # check for spring
+                start is not None
+                and end is not None
+                and nodes is not None
+                and width is not None,
+                {"_start": start, "_end": end, "_nodes": nodes, "_width": width},
+            ),
+        ]
 
-        # shape can only be one of rectangle, triangle or circle
-        if width is not None and height is not None and upper_left_corner is not None:
-            self._width = width
-            self._height = height
-            self._upper_left_corner = upper_left_corner
-        elif radius is not None:
-            self._radius = radius
-        elif A is not None and B is not None and C is not None:
-            self._A = A
-            self._B = B
-            self._C = C
+        # Loop through conditions and assign attributes
+        for condition, attributes in shapes:
+            if condition:
+                for attr, value in attributes.items():
+                    setattr(self, attr, value)
+                break
 
     @abstractmethod
-    def animate(
+    def draw(
         self,
         canvas: Canvas,
-        time_vec: List[int],
-        pos_vec: Any,
+        pos: Tuple[int, int],
     ) -> None:
+        """Specific function for every shape that draws the shape at the given
+            position.
+
+        Args:
+            canvas (Canvas): Canvas to draw the shape on.
+            pos (Any): Position where shape is being drawn.
+        """
+
         pass
 
     @property
@@ -61,14 +88,6 @@ class Shape:
     @height.setter
     def height(self, new_height: int):
         self._height = new_height
-
-    @property
-    def upper_left_corner(self):
-        return self._upper_left_corner
-
-    @upper_left_corner.setter
-    def height(self, new_corner: int):
-        self._upper_left_corner = new_corner
 
     @property
     def radius(self):
@@ -101,3 +120,27 @@ class Shape:
     @C.setter
     def C(self, new_C: int):
         self._C = new_C
+
+    @property
+    def start(self) -> Tuple[int, int] | Any:
+        return self._start
+
+    @start.setter
+    def start(self, new_start: Tuple[int, int] | Any):
+        self._start = new_start
+
+    @property
+    def end(self) -> Tuple[int, int] | Any:
+        return self._end
+
+    @end.setter
+    def end(self, new_end: Tuple[int, int] | Any):
+        self._end = new_end
+
+    @property
+    def nodes(self) -> int | Any:
+        return self._nodes
+
+    @nodes.setter
+    def nodes(self, new_nodes: int | Any):
+        self._nodes = new_nodes
