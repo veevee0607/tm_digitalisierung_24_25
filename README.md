@@ -3,7 +3,7 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/veevee0607/tm_digitalisierung_24_25.git/1-animation-modules)
 
 
-[1]: https://hub.binder.curvenote.dev/user/veevee0607-tm_d-lisierung_24_25-acseiuoe/lab/tree/notebooks/ui_test.ipynb (Test Notebook)
+- [Test Notebook] (https://hub.binder.curvenote.dev/user/veevee0607-tm_d-lisierung_24_25-acseiuoe/lab/tree/notebooks/ui_test.ipynb)
 ## 01: introduction
 
 _To Do_
