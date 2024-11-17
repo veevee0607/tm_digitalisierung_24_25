@@ -10,5 +10,3 @@ nbformat
 ipycanvas
 
 pre-commit
-
-test
