@@ -1,5 +1,7 @@
 # Project name
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/veevee0607/tm_digitalisierung_24_25.git/1-animation-modules)
+
 ## 01: introduction
 
 _To Do_
