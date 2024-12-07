@@ -82,7 +82,7 @@ nodes being numbered from 0 (first endpoint) to *n+1* (second endpoint):
 <img src="images/spr_nodes.png" width=70% height=auto
   title="Numbering of spring nodes" alt="Numbering of spring nodes" />
 
-The length of the spring, i.e., the distance between the two endpoints, is 
+The length of the spring, i.e., the distance between the two endpoints, is
 defined as *l*, illustrated by the following figure:
 
 <img src="images/spr_length.png" width=70% height=auto
@@ -130,7 +130,7 @@ Finally, the unit tangent and unit normal vectors are computed
 between the endpoints, respectively), allowing the node coordinates to be
 easily obtained for endpoints located anywhere in the xy plane.
 
-<img src="images/spr_unit_vectors.png" width=25% 
+<img src="images/spr_unit_vectors.png" width=25%
   title="Unit vectors" alt="Unit vectors" />
 
 Putting it all together, the location of the *i*th node relative to the
