@@ -28,7 +28,7 @@ class GUI:
 
         slider_d = widgets.FloatSlider(
             value=DEFAULT_D,
-            min=0.0,
+            min=0.1,
             max=5.0,
             step=0.1,
             description="d",
@@ -43,7 +43,7 @@ class GUI:
 
         slider_c = widgets.FloatSlider(
             value=DEFAULT_C,
-            min=0.0,
+            min=0.1,
             max=1.0,
             step=0.1,
             description="c",
