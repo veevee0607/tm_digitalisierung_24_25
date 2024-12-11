@@ -34,7 +34,6 @@ class AnimationInstance:
         """Function to stop animation thread if "stop"
         button is pressed.
         """
-        print("here")
         if self.is_running.is_set():
             # stop animation
             self.is_running.clear()

@@ -187,7 +187,6 @@ class GUI:
         """
         global IS_RUNNING, ANIMATION_INSTANCE
         if IS_RUNNING:
-            print("here gui")
             IS_RUNNING = False
             b.description = "▶"
             ANIMATION_INSTANCE.stop()
