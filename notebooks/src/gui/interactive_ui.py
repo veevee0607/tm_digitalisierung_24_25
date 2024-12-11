@@ -112,20 +112,32 @@ class GUI:
         anim_button.description = "▶"
 
         # left multi canvas for visual animation
-        mult_canvas_vis = MultiCanvas(
+        mult_canvas_anim = MultiCanvas(
             n_canvases=4,
             width=600,
             height=600,
             layout=widgets.Layout(
                 width="100%",
-                height="100%",  # , border="2px solid purple", padding="1px"
+                height="100%",  # border="2px solid green", padding="1px"
+            ),
+        )
+
+        # right multi canvas for graph
+        mult_canvas_graph = MultiCanvas(
+            n_canvases=4,
+            width=600,
+            height=600,
+            layout=widgets.Layout(
+                width="100%",
+                height="100%",  # border="2px solid purple", padding="1px"
             ),
         )
         global ANIMATION_INSTANCE
         ANIMATION_INSTANCE = animation_instance
-        ANIMATION_INSTANCE.canvas = mult_canvas_vis
+        ANIMATION_INSTANCE.anim_canvas = mult_canvas_anim
+        ANIMATION_INSTANCE.graph_canvas = mult_canvas_graph
         ANIMATION_INSTANCE._inital_visual()
-        anim_button.on_click(lambda b: self.animation_button_click(mult_canvas_vis, b))
+        anim_button.on_click(lambda b: self.animation_button_click(mult_canvas_anim, b))
         # anim_button.style.button_color = 'lightgreen'
 
         # make grid for animation interaction
@@ -138,16 +150,16 @@ class GUI:
         anim_inter_grid[2, 0] = anim_button
 
         # right multi canvas for plot animation
-        mult_canvas_plot = MultiCanvas(
-            layout=widgets.Layout(
-                width="100%", height="100%", border="2px solid green", padding="1px"
-            )
-        )
+        # mult_canvas_plot = MultiCanvas(
+        #     layout=widgets.Layout(
+        #         width="100%", height="100%", border="2px solid green", padding="1px"
+        #     )
+        # )
 
         # make grid for canvases
         canvas_grid = GridspecLayout(1, 2)
-        canvas_grid[0, 0] = mult_canvas_vis
-        canvas_grid[0, 1] = mult_canvas_plot
+        canvas_grid[0, 0] = mult_canvas_anim
+        canvas_grid[0, 1] = mult_canvas_graph
 
         # make grid for interacitve part
         interactive_grid = GridspecLayout(2, 1)
@@ -175,6 +187,7 @@ class GUI:
         """
         global IS_RUNNING, ANIMATION_INSTANCE
         if IS_RUNNING:
+            print("here gui")
             IS_RUNNING = False
             b.description = "▶"
             ANIMATION_INSTANCE.stop()

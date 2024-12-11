@@ -19,3 +19,8 @@ DIRECTIONS = {
     "bottom": (-1, 1),
     "top": (1, -1),
 }
+X_ORIGIN = 20
+Y_ORIGIN = 55
+Y_AX_TOP = 30
+Y_AX_BOTTOM = 30
+X_AX_RIGHT = 70
