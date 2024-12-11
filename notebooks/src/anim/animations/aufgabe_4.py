@@ -209,6 +209,10 @@ class Aufgabe4(AnimationInstance):
             self.graph_canvas.width,
             self.graph_canvas.height,
         )
+        # clear visual representation
+        self.anim_canvas[0].clear()
+
+        # calculate
         t = np.linspace(0, NUM_TIME_UNITS, NUM_DATAPOINTS)
         solution = self.calculator.integrate(
             self.calculator.calculate,
