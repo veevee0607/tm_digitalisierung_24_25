@@ -1,17 +1,13 @@
 import time
 import math
-import asyncio
-from threading import Thread
-from ipycanvas import Canvas, hold_canvas
+from ipycanvas import hold_canvas
 import numpy as np
 import time
 
 from ..modules.shapes import Spring, Rectangle
-from ..modules import still_modules
 from ...utils.helper import (
     abs_value,
     map_value,
-    animate_text,
     draw_line_with_strokes,
     rotate_point,
 )
@@ -28,6 +24,11 @@ from ...utils.constants import (
     DEFAULT_C,
     DEFAULT_D,
     DEFAULT_FRAME,
+    X_ORIGIN,
+    Y_ORIGIN,
+    Y_AX_TOP,
+    Y_AX_BOTTOM,
+    X_AX_RIGHT,
 )
 
 
@@ -42,98 +43,81 @@ class Aufgabe4(AnimationInstance):
         self.circ = Circle(center=(-1, -1), radius=-1)
         self.rec = Rectangle(width=-1, height=-1)
 
-    def _calculate(self):
-        t = np.linspace(0, NUM_TIME_UNITS, NUM_DATAPOINTS)
-        solution = self.calculator.integrate(
-            self.calculator.calculate,
-            START_DEFLECTION,
-            START_VELOCITY,
-            t,  # t
-            self.c,  # c
-            self.d,  # d
-            MASS,  # m
-        )
-        self.solution = solution
-
     def _inital_visual(self):
-        """_summary_
-
-        Returns:
-            _type_: _description_
-        """
+        """Draw the inital visual for the visual representation of oscillation."""
         # draw inital lines
         # coordinates
-        x_1_h = abs_value(self.canvas.height, 30)
-        y_1_h = abs_value(self.canvas.height, 20)
-        x_2_h = abs_value(self.canvas.height, 40)
-        y_2_h = abs_value(self.canvas.height, 20)
+        x_1_h = abs_value(self.anim_canvas.height, 30)
+        y_1_h = abs_value(self.anim_canvas.height, 20)
+        x_2_h = abs_value(self.anim_canvas.height, 40)
+        y_2_h = abs_value(self.anim_canvas.height, 20)
 
-        x_1_v = abs_value(self.canvas.height, 10)
-        y_1_v = abs_value(self.canvas.height, 50)
-        x_2_v = abs_value(self.canvas.height, 10)
-        y_2_v = abs_value(self.canvas.height, 60)
+        x_1_v = abs_value(self.anim_canvas.height, 10)
+        y_1_v = abs_value(self.anim_canvas.height, 50)
+        x_2_v = abs_value(self.anim_canvas.height, 10)
+        y_2_v = abs_value(self.anim_canvas.height, 60)
 
         # horizontal
-        self.canvas[1].line_width = 2.0
+        self.anim_canvas[1].line_width = 2.0
         draw_line_with_strokes(
-            canvas=self.canvas[1],
+            canvas=self.anim_canvas[1],
             x_1=x_1_h,
             y_1=y_1_h,
             x_2=x_2_h,
             y_2=y_2_h,
-            len_strokes=abs_value(self.canvas.height, 2),
+            len_strokes=abs_value(self.anim_canvas.height, 2),
             num_strokes=5,
             alpha=80,
             direction_strokes="top",
         )
-        self.canvas[1].line_width = 1.5
+        self.anim_canvas[1].line_width = 1.5
 
         # triangle on horizontal line
         triangle_endpoint_x_h = x_1_h + ((x_2_h - x_1_h) / 2)
-        triangle_endpoint_y_h = y_1_h + abs_value(self.canvas.height, 5)
-        self.canvas[1].stroke_line(
-            x_1_h + abs_value(self.canvas.height, 1),
+        triangle_endpoint_y_h = y_1_h + abs_value(self.anim_canvas.height, 5)
+        self.anim_canvas[1].stroke_line(
+            x_1_h + abs_value(self.anim_canvas.height, 1),
             y_1_h,
             triangle_endpoint_x_h,
             triangle_endpoint_y_h,
         )
-        self.canvas[1].stroke_line(
-            x_2_h - abs_value(self.canvas.height, 1),
+        self.anim_canvas[1].stroke_line(
+            x_2_h - abs_value(self.anim_canvas.height, 1),
             y_1_h,
             triangle_endpoint_x_h,
             triangle_endpoint_y_h,
         )
 
         # vertical line
-        self.canvas[1].line_width = 2.0
+        self.anim_canvas[1].line_width = 2.0
         draw_line_with_strokes(
-            canvas=self.canvas[1],
+            canvas=self.anim_canvas[1],
             x_1=x_1_v,
             y_1=y_1_v,
             x_2=x_2_v,
             y_2=y_2_v,
-            len_strokes=abs_value(self.canvas.height, 2),
+            len_strokes=abs_value(self.anim_canvas.height, 2),
             num_strokes=5,
             alpha=10,
             direction_strokes="left",
         )
 
-        self.canvas[1].line_width = 1.5
+        self.anim_canvas[1].line_width = 1.5
 
         # triangle on vertical line
-        triangle_endpoint_x_v = x_1_v + abs_value(self.canvas.height, 5)
+        triangle_endpoint_x_v = x_1_v + abs_value(self.anim_canvas.height, 5)
         triangle_endpoint_y_v = y_1_v + ((y_2_v - y_1_v) / 2)
-        self.canvas[1].stroke_line(
+        self.anim_canvas[1].stroke_line(
             x_1_v,
-            y_1_v + abs_value(self.canvas.height, 1),
+            y_1_v + abs_value(self.anim_canvas.height, 1),
             triangle_endpoint_x_v,
             triangle_endpoint_y_v,
         )
-        self.canvas[1].stroke_line(
+        self.anim_canvas[1].stroke_line(
             x_2_v,
             y_2_v
             - abs_value(
-                self.canvas.height,
+                self.anim_canvas.height,
                 1,
             ),
             triangle_endpoint_x_v,
@@ -141,25 +125,25 @@ class Aufgabe4(AnimationInstance):
         )
 
         # make circles
-        self.canvas[1].line_width = 2.5
-        self.canvas[1].fill_style = "#FFFFFF"
+        self.anim_canvas[1].line_width = 2.5
+        self.anim_canvas[1].fill_style = "#FFFFFF"
 
         # horizontal
-        self.canvas[1].stroke_circle(
+        self.anim_canvas[1].stroke_circle(
             x=triangle_endpoint_x_h,
             y=triangle_endpoint_y_h,
-            radius=int(abs_value(self.canvas.height, 1) / 1.5),
+            radius=int(abs_value(self.anim_canvas.height, 1) / 1.5),
         )
-        self.canvas[1].fill_circle(
+        self.anim_canvas[1].fill_circle(
             x=triangle_endpoint_x_h,
             y=triangle_endpoint_y_h,
-            radius=int(abs_value(self.canvas.height, 1) / 1.5),
+            radius=int(abs_value(self.anim_canvas.height, 1) / 1.5),
         )
         self.bearings_point = (triangle_endpoint_x_h, triangle_endpoint_y_h)
 
         # vertical
-        radius_v = int(abs_value(self.canvas.height, 1) / 1.5)
-        self.canvas[1].stroke_circle(
+        radius_v = int(abs_value(self.anim_canvas.height, 1) / 1.5)
+        self.anim_canvas[1].stroke_circle(
             x=triangle_endpoint_x_v,
             y=triangle_endpoint_y_v,
             radius=radius_v,
@@ -168,12 +152,12 @@ class Aufgabe4(AnimationInstance):
         # set anker point for rectanlge and circle
         self.radius_v = radius_v
         self.anker_point_rec = (triangle_endpoint_x_v, triangle_endpoint_y_v - radius_v)
-        self.rec.width = abs_value(self.canvas.height, 50)
+        self.rec.width = abs_value(self.anim_canvas.height, 50)
         self.rec.height = self.radius_v * 2
-        self.circ.radius = abs_value(self.canvas.height, 10)
+        self.circ.radius = abs_value(self.anim_canvas.height, 10)
         # self.circ.center = (
         #     self.anker_point_rec[0]
-        #     + abs_value(self.canvas.height, 50)
+        #     + abs_value(self.anim_canvas.height, 50)
         #     + self.circ.radius,
         #     self.anker_point_rec[1] + self.radius_v,
         # )
@@ -186,127 +170,124 @@ class Aufgabe4(AnimationInstance):
         self._draw_first_frame()
 
         # fill circle after rectangle
-        self.canvas[1].fill_style = "#FFFFFF"
-        self.canvas[1].fill_circle(
+        self.anim_canvas[1].fill_style = "#FFFFFF"
+        self.anim_canvas[1].fill_circle(
             x=triangle_endpoint_x_v,
             y=triangle_endpoint_y_v,
             radius=radius_v,
         )
 
-    def _animate(self):
-        for s in self.solution:
-            if self.is_running.is_set():
-                angle = s[1]
-                self.draw_rotating_angle(angle)
-                # self.draw_feder_daempfer(angle)
-                time.sleep(0.02)
-            else:
+        # set some class attributes
+        self.x_origin = abs_value(self.graph_canvas.height, X_ORIGIN)
+        self.y_origin = abs_value(self.graph_canvas.width, Y_ORIGIN)
+        self.y_ax_top = abs_value(self.graph_canvas.height, Y_AX_TOP)
+        self.y_ax_bottom = abs_value(self.graph_canvas.height, Y_AX_BOTTOM)
+        self.x_ax_right = abs_value(self.graph_canvas.height, X_AX_RIGHT)
+
+        # draw coordinate system
+        self.draw_coordinate_system()
+        self.graph_canvas[0].translate(x=self.x_origin, y=self.y_origin)
+        self.graph_canvas[0].fill_style = "blue"
+
+        self.graph_canvas[2].translate(x=self.x_origin, y=self.y_origin)
+        self.graph_canvas[2].stroke_style = "blue"
+        self.graph_canvas[2].line_width = 1.0
+
+    def _calculate(self):
+        """Function to calculate the solution given the current inputs."""
+        # clear static graph
+        self.graph_canvas[2].clear_rect(
+            -self.x_origin,
+            -self.y_origin,
+            self.graph_canvas.width,
+            self.graph_canvas.height,
+        )
+        # clear animated graph
+        self.graph_canvas[0].clear_rect(
+            -self.x_origin,
+            -self.y_origin,
+            self.graph_canvas.width,
+            self.graph_canvas.height,
+        )
+        t = np.linspace(0, NUM_TIME_UNITS, NUM_DATAPOINTS)
+        solution = self.calculator.integrate(
+            self.calculator.calculate,
+            START_DEFLECTION,
+            START_VELOCITY,
+            t,  # t
+            self.c,  # c
+            self.d,  # d
+            MASS,  # m
+        )
+        solution = solution[:, 1]
+        self.solution = np.array(list(zip(t, solution)))
+
+        # map solution for graph animation
+        t_min = t.min(axis=0)
+        t_max = t.max(axis=0)
+        s_min = min(solution)
+        s_max = max(solution)
+
+        self.mapped_solution = [
+            (
+                map_value(val_t, t_min, t_max, 0, self.x_ax_right),
+                map_value(
+                    val_s,
+                    s_min,
+                    s_max,
+                    0,
+                    self.y_ax_top,  # only half the axis
+                ),
+            )
+            for (val_t, val_s) in self.solution
+        ]
+        self.offset = self.mapped_solution[0][1]
+
+    def _animate_visual(self):
+        """Function to animate the visual representation of oscillation
+        and the line graph.
+        """
+        # draw still graph
+        self.graph_canvas[2].begin_path()
+        first_point = self.mapped_solution[0]
+        # start at first point
+        self.graph_canvas[2].move_to(first_point[0], first_point[1])
+
+        for t, s in self.mapped_solution:
+            self.graph_canvas[2].line_to(t, s - self.offset)
+
+        self.graph_canvas[2].stroke()
+
+        # make iterators for both solutions
+        visual_iter = iter(self.solution)
+        graph_iter = iter(self.mapped_solution)
+
+        while self.is_running.is_set():
+            try:
+                # graph animation
+                t_graph, s_graph = next(graph_iter)
+                with hold_canvas():
+                    self.animate_blob(t_graph, s_graph)
+
+                # visual animation
+                _, s_visual = next(visual_iter)
+                self.draw_rotating_angle(s_visual)
+
+                # pause
+                self.anim_canvas[0].sleep(10)  # 20 milli seconds
+                self.graph_canvas[0].sleep(10)
+
+            # end animation when either iterator is exhausted
+            except StopIteration:
+                self.notify_observers()
                 break
-        # notify the button when animation finishes
-        self.notify_observers()
-
-    def draw_feder_daempfer(self, angle):
-        alpha = np.arctan2(
-            np.cos(angle) - self.bearings_point[0],
-            np.sin(angle) - self.bearings_point[1],
-        )
-
-        # obere Transformationmatrix
-        K_o = np.array(
-            [
-                [np.sin(alpha), -np.cos(alpha), 1 - 0.355 * np.sin(alpha)],
-                [np.cos(alpha), np.sin(alpha), 1.3 - 0.355 * np.cos(alpha)],
-                [0, 0, 1],
-            ]
-        )
-
-        # Ortsvektor des KOS-Ursprungs 2 in globalen Koordinaten
-        # koordinatenursprung in den unteren Gabelpunkt legen
-        r_O2_1 = np.array(
-            [1 - 0.355 * np.sin(alpha), 1.3 - 0.355 * np.cos(alpha), 1]
-        )  # mitte der oberen oder unteren Gabel
-
-        # oberer Gabelungspunkt
-        r_P1_2 = np.array([-0.35, 0, 1])
-
-        # linker Gabelungspunkt
-        r_P2_2 = np.array([0, 0.2, 1])
-
-        # rechter Gabelungspunkt
-        r_P3_2 = np.array([0, -0.2, 1])
-
-        # untere Transformationsmatrix
-        K_u = np.array(
-            [
-                [
-                    np.sin(alpha),
-                    -np.cos(alpha),
-                    np.cos(angle) + 0.1 * np.sin(alpha),
-                ],
-                [np.cos(alpha), np.sin(alpha), np.sin(angle) + 0.1 * np.cos(alpha)],
-                [0, 0, 1],
-            ]
-        )
-
-        # Ortvektor des KOS-Ursprungs 3 in globalen Koordinaten
-        r_O3_1 = np.array(
-            [
-                np.cos(angle) + 0.1 * np.sin(alpha),
-                np.sin(angle) + 0.1 * np.cos(alpha),
-                1,
-            ]
-        )
-
-        # unterer Gabelungspunkt
-        r_P4_3 = np.array([-0.1, 0, 1])  # _3 = bzgl Koordinatensystem 3
-
-        # linker Gabelungspunkt
-        r_P5_3 = np.array([0, 0.2, 1])
-
-        # rechter Gabelungspunkt
-        r_P6_3 = np.array([0, -0.2, 1])
-
-        # Punkte in globalen Koordinaten
-        r_P1_1 = np.matmul(K_o, r_P1_2)  # _1 = globale Koordinaten
-        r_P2_1 = np.matmul(K_o, r_P2_2)
-        r_P3_1 = np.matmul(K_o, r_P3_2)
-        r_P4_1 = np.matmul(K_u, r_P4_3)
-        r_P5_1 = np.matmul(K_u, r_P5_3)
-        r_P6_1 = np.matmul(K_u, r_P6_3)
-
-        # print(f"{r_P4_1=}")
-        with hold_canvas():
-            self.canvas[2].translate(self.bearings_point[0], self.bearings_point[1])
-            # self.canvas[0].fill_circle(
-            #     self.bearings_point[0], self.bearings_point[1], 5
-            # )
-            self.canvas[2].clear()
-            self.canvas[2].stroke_line(
-                r_P4_1[0] * 100 + 200,
-                r_O3_1[0] * 100 + 50,
-                r_P4_1[1] * 100 + 200,
-                r_O3_1[1] * 100 + 50,
-            )
-            self.canvas[2].stroke_line(
-                r_P5_1[0] * 100 + 200,
-                r_P6_1[0] * 100 + 50,
-                r_P5_1[1] * 100 + 200,
-                r_P6_1[1] * 100 + 50,
-            )
-            self.canvas[2].stroke_line(
-                r_O2_1[0] * 100 + 200,
-                r_P1_1[0] * 100 + 50,
-                r_O2_1[1] * 100 + 200,
-                r_P1_1[1] * 100 + 50,
-            )
-            self.canvas[2].stroke_line(
-                r_P2_1[0] * 100 + 200,
-                r_P3_1[0] * 100 + 50,
-                r_P2_1[1] * 100 + 200,
-                r_P3_1[1] * 100 + 50,
-            )
 
     def draw_rotating_angle(self, angle):
+        """Function to draw the rectangle and circle at given angle.
+
+        Args:
+            angle (int): Current angle.
+        """
         # Calculate the coordinates of the four corners
         fixed_x = self.anker_point_rec[0]
         fixed_y = self.anker_point_rec[1] + self.radius_v
@@ -333,15 +314,15 @@ class Aufgabe4(AnimationInstance):
         bottom_left_rot = rotate_point(*bottom_left, fixed_x, fixed_y, angle)
         bottom_right_rot = rotate_point(*bottom_right, fixed_x, fixed_y, angle)
 
-        self.canvas[0].line_width = 1.5
+        self.anim_canvas[0].line_width = 1.5
         with hold_canvas():
-            self.canvas[0].clear()
+            self.anim_canvas[0].clear()
             # draw the rectangle using the rotated points
-            self.canvas[0].fill_style = "#bebebe"
-            self.canvas[0].fill_polygon(
+            self.anim_canvas[0].fill_style = "#bebebe"
+            self.anim_canvas[0].fill_polygon(
                 [top_left_rot, top_right_rot, bottom_right_rot, bottom_left_rot]
             )
-            self.canvas[0].stroke_polygon(
+            self.anim_canvas[0].stroke_polygon(
                 [top_left_rot, top_right_rot, bottom_right_rot, bottom_left_rot]
             )
 
@@ -351,46 +332,82 @@ class Aufgabe4(AnimationInstance):
             )
 
             # draw circle
-            self.canvas[0].fill_circle(
+            self.anim_canvas[0].fill_circle(
                 circle_center[0], circle_center[1], self.circ.radius
             )
-            self.canvas[0].stroke_circle(
+            self.anim_canvas[0].stroke_circle(
                 circle_center[0], circle_center[1], self.circ.radius
             )
 
-    def _draw_first_frame(self):
-        # self.canvas[0].fill_style = "#bebebe"
-        # self.canvas[0].line_width = 1
+    def draw_coordinate_system(self):
+        """Function to draw basic, static coordinate system."""
+        self.graph_canvas[1].line_width = 2.0
+        # translate
+        self.graph_canvas[1].translate(x=self.x_origin, y=self.y_origin)
+        # draw x- and y-axis
+        self.graph_canvas[1].stroke_line(
+            x1=0, y1=-self.y_ax_top, x2=0, y2=self.y_ax_bottom
+        )
+        self.graph_canvas[1].stroke_line(x1=0, y1=0, x2=self.x_ax_right, y2=0)
+        # draw labels
+        self.graph_canvas[1].font = "italic 20px 'Cambria Math', serif"
+        self.graph_canvas[1].fill_text(
+            "t [s]",
+            self.x_ax_right - abs_value(self.graph_canvas.width, 5),
+            abs_value(self.graph_canvas.width, 5),
+        )
+        # vertical label
+        # save curren state of canvas
+        self.graph_canvas[1].save()
+        # rotate canvas for verical text
+        self.graph_canvas[1].rotate(-math.pi / 2)
+        self.graph_canvas[1].fill_text(
+            "Auslenkung φ(t) [ ° ]",
+            -self.y_ax_top // 2,
+            -abs_value(self.graph_canvas.width, 5),
+        )
+        # restore canvas state
+        self.graph_canvas[1].restore()
 
-        # # draw rec
-        # self.canvas[0].fill_rect(
-        #     self.anker_point_rec[0],
-        #     self.anker_point_rec[1],
-        #     self.rec.width,
-        #     self.rec.height,
-        # )
-        # self.canvas[0].stroke_rect(
-        #     self.anker_point_rec[0],
-        #     self.anker_point_rec[1],
-        #     self.rec.width,
-        #     self.rec.height,
-        # )
+        # add ticks
+        self.graph_canvas[1].line_width = 1.0
+        tick_length = abs_value(self.graph_canvas.width, 2)
+        num_ticks_x = 10
+        # x axis
+        x_spacing = self.x_ax_right / num_ticks_x
+        for i in range(1, num_ticks_x + 1):
+            x = i * x_spacing
+            self.graph_canvas[1].stroke_line(
+                x1=x, y1=-tick_length / 2, x2=x, y2=tick_length / 2
+            )
 
-        # # self.anker_point_circ = (
-        # #     self.anker_point_rec[0] + abs_value(self.canvas.height, 50),
-        # #     self.anker_point_rec[1] + self.radius_v,
-        # # )
+        # y axis
+        num_ticks_y = 8
+        y_spacing = (self.y_ax_top + self.y_ax_bottom) / num_ticks_y
+        for i in range(1, int(num_ticks_y / 2) + 1):
+            y_1 = -i * y_spacing
+            y_2 = i * y_spacing
+            self.graph_canvas[1].stroke_line(
+                x1=-tick_length / 2, y1=y_1, x2=tick_length / 2, y2=y_1
+            )
+            self.graph_canvas[1].stroke_line(
+                x1=-tick_length / 2, y1=y_2, x2=tick_length / 2, y2=y_2
+            )
 
-        # # draw circle
-        # self.canvas[0].fill_circle(
-        #     self.circ.center[0],
-        #     self.circ.center[1],
-        #     self.circ.radius,
-        # )
-        # self.canvas[0].stroke_circle(
-        #     self.circ.center[0],
-        #     self.circ.center[1],
-        #     self.circ.radius,
-        # )
+    def animate_blob(self, t, s):
+        """Function to animate the blob along the line graph.
 
-        return None
+        Args:
+            t (int): Current x position.
+            s (int): Current y position.
+        """
+        with hold_canvas():
+            self.graph_canvas[0].clear_rect(
+                -self.x_origin,
+                -self.y_origin,
+                self.graph_canvas.width,
+                self.graph_canvas.height,
+            )
+            self.graph_canvas[0].fill_circle(
+                t, s - self.offset, radius=abs_value(self.graph_canvas.height, 1)
+            )
